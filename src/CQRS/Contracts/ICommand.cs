@@ -1,6 +1,6 @@
 using System;
 
-namespace src.Interfaces.Contracts
+namespace src.CQRS.Contracts
 {
     public interface ICommand
     {

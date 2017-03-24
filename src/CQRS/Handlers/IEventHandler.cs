@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using src.Interfaces.Contracts;
+using src.CQRS.Contracts;
 
-namespace src.Interfaces.Handlers
+namespace src.CQRS.Handlers
 {
     public interface IEventHandler<in TEvent> where TEvent : IEvent
     {
