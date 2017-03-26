@@ -1,4 +1,4 @@
-namespace src.Builders
+namespace gifty.Shared.Builders
 {
     public interface IServiceBuilder
     {

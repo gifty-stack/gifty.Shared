@@ -1,6 +1,6 @@
 using System;
 
-namespace src.CQRS.Contracts
+namespace gifty.Shared.CQRS.Contracts
 {
     public interface ICommand
     {

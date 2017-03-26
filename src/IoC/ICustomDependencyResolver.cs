@@ -1,4 +1,4 @@
-namespace src.IoC
+namespace gifty.Shared.IoC
 {
     public interface ICustomDependencyResolver
     {

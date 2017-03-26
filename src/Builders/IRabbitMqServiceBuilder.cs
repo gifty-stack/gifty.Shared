@@ -1,6 +1,7 @@
-using src.CQRS.Contracts;
 
-namespace src.Builders
+using gifty.Shared.CQRS.Contracts;
+
+namespace gifty.Shared.Builders
 {
     public interface IRabbitMqServiceBuilder
     {

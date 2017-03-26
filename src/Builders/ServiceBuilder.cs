@@ -1,14 +1,14 @@
 using System;
 using System.IO;
 using Autofac;
+using gifty.Shared.CQRS.Handlers;
+using gifty.Shared.CQRS.Contracts;
+using gifty.Shared.IoC;
 using Microsoft.AspNetCore.Hosting;
 using RawRabbit;
 using RawRabbit.vNext;
-using src.Builders;
-using src.CQRS.Handlers;
-using src.IoC;
 
-namespace src.ServiceBuilder
+namespace gifty.Shared.Builders
 {
     public class ServiceBuilder : IServiceBuilder, IAutofacServiceBuilder, IRabbitMqServiceBuilder
     {

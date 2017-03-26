@@ -1,6 +1,6 @@
 using Autofac;
 
-namespace src.IoC
+namespace gifty.Shared.IoC
 {
     public class CustomDependencyResolver : ICustomDependencyResolver
     {

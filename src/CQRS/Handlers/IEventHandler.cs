@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using src.CQRS.Contracts;
+using gifty.Shared.CQRS.Contracts;
 
-namespace src.CQRS.Handlers
+namespace gifty.Shared.CQRS.Handlers
 {
     public interface IEventHandler<in TEvent> where TEvent : IEvent
     {

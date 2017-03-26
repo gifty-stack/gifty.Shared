@@ -1,8 +1,8 @@
 using System;
 using Autofac;
-using src.IoC;
+using gifty.Shared.IoC;
 
-namespace src.Builders
+namespace gifty.Shared.Builders
 {
     public interface IAutofacServiceBuilder
     {
