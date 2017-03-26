@@ -24,7 +24,7 @@ namespace gifty.Shared.Builders
             _webHostBuilder = webHostBuilder;
         }
 
-        public static ServiceBuilder CreateDefault<TStartup>() where TStartup : class
+        public static IServiceBuilder CreateDefault<TStartup>() where TStartup : class
         {
             var webHostBuilder  = new WebHostBuilder()
                 .UseContentRoot(Directory.GetCurrentDirectory())
