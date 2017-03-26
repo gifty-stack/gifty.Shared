@@ -9,8 +9,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
     <PackageReference Include="Autofac" Version="4.2.1" />
-    <PackageReference Include="RawRabbit" Version="1.10.0" />
-    <PackageReference Include="RawRabbit.vNext" Version="1.10.0" />
+    <PackageReference Include="RawRabbit" Version="1.10.3" />
+    <PackageReference Include="RawRabbit.vNext" Version="1.10.3" />
+    <PackageReference Include="RawRabbit.DependencyInjection.Autofac" Version="1.10.3" />
   </ItemGroup>
 
 </Project>

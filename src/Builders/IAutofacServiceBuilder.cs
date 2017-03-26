@@ -6,6 +6,6 @@ namespace gifty.Shared.Builders
 {
     public interface IAutofacServiceBuilder
     {
-         IRabbitMqServiceBuilder WithAutofac(Func<ContainerBuilder, ICustomDependencyResolver> registrations);
+         IRabbitMqServiceBuilder WithAutofac(Func<ContainerBuilder, ContainerBuilder> registrations);
     }
 }

@@ -2,11 +2,12 @@ using System;
 using System.IO;
 using Autofac;
 using gifty.Shared.CQRS.Handlers;
-using gifty.Shared.CQRS.Contracts;
 using gifty.Shared.IoC;
 using Microsoft.AspNetCore.Hosting;
 using RawRabbit;
 using RawRabbit.vNext;
+using RawRabbit.Configuration;
+using RawRabbit.DependencyInjection.Autofac;
 
 namespace gifty.Shared.Builders
 {
@@ -15,6 +16,7 @@ namespace gifty.Shared.Builders
         private IWebHostBuilder _webHostBuilder;
 
         private IWebHost _webHost;
+        private ContainerBuilder _containerBuilder;
         private ICustomDependencyResolver _customDependencyResolver;
         private IBusClient _busClient;
         private string _queueName;
@@ -40,16 +42,29 @@ namespace gifty.Shared.Builders
             return this;
         }
 
-        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithAutofac(Func<ContainerBuilder,ICustomDependencyResolver> registrations)
+        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithAutofac(Func<ContainerBuilder,ContainerBuilder> registrations)
         {
-            var containerBuilder = new ContainerBuilder();
-            _customDependencyResolver = registrations(containerBuilder);
-
+            _containerBuilder = registrations(new ContainerBuilder());
             return this;
         }
 
-        IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName)
+        IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName, string username, string password, int port)
         {
+            _containerBuilder.RegisterRawRabbit(new RawRabbitConfiguration
+            {
+                Username = username,
+                Password = username,
+                Port = port,
+                VirtualHost = "/", 
+                Queue = new GeneralQueueConfiguration()
+                {
+                    Durable = true,
+                },
+                RequestTimeout = new TimeSpan(0, 10, 0)
+            });
+
+            _customDependencyResolver = new CustomDependencyResolver(_containerBuilder.Build());
+
             _busClient = BusClientFactory.CreateDefault();
             _queueName = queueName;
 
