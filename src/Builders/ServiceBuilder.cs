@@ -1,24 +1,21 @@
 using System;
 using System.IO;
 using Autofac;
-using gifty.Shared.CQRS.Handlers;
 using gifty.Shared.IoC;
 using Microsoft.AspNetCore.Hosting;
-using RawRabbit;
-using RawRabbit.vNext;
-using RawRabbit.Configuration;
-using RawRabbit.DependencyInjection.Autofac;
+using gifty.Shared.Extensions;
+using gifty.Shared.ServiceBus;
 
 namespace gifty.Shared.Builders
 {
-    public class ServiceBuilder : IServiceBuilder, IAutofacServiceBuilder, IRabbitMqServiceBuilder
+    public sealed class ServiceBuilder : IServiceBuilder, IAutofacServiceBuilder, IRabbitMqServiceBuilder
     {
         private IWebHostBuilder _webHostBuilder;
 
         private IWebHost _webHost;
         private ContainerBuilder _containerBuilder;
         private ICustomDependencyResolver _customDependencyResolver;
-        private IBusClient _busClient;
+        private IServiceBus _serviceBus;
         private string _queueName;
 
         public ServiceBuilder(IWebHostBuilder webHostBuilder)
@@ -50,22 +47,16 @@ namespace gifty.Shared.Builders
 
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName, string username, string password, int port)
         {
-            _containerBuilder.RegisterRawRabbit(new RawRabbitConfiguration
-            {
-                Username = username,
-                Password = username,
-                Port = port,
-                VirtualHost = "/", 
-                Queue = new GeneralQueueConfiguration()
-                {
-                    Durable = true,
-                },
-                RequestTimeout = new TimeSpan(0, 10, 0)
-            });
+            _containerBuilder.RegisterRawRabbitWithAutofac(queueName, username, password, port);
+            _containerBuilder.RegisterType<gifty.Shared.ServiceBus.ServiceBus>().As<IServiceBus>();
+            var container = _containerBuilder.Build();
 
-            _customDependencyResolver = new CustomDependencyResolver(_containerBuilder.Build());
+            var customDependencyBuilder = new ContainerBuilder();
 
-            _busClient = BusClientFactory.CreateDefault();
+            customDependencyBuilder.RegisterInstance<ICustomDependencyResolver>(new CustomDependencyResolver(container));
+            customDependencyBuilder.Update(container);
+
+            _serviceBus = container.Resolve<IServiceBus>();
             _queueName = queueName;
 
             return this;
@@ -73,23 +64,13 @@ namespace gifty.Shared.Builders
 
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.SubscribeToCommand<TCommand>()
         {
-            _busClient.SubscribeAsync<TCommand>(async (command, context) => 
-            {
-                var commandHandler = _customDependencyResolver.Resolve<ICommandHandler<TCommand>>();
-                await commandHandler.HandleAsync(command);
-            }, cfg => cfg.WithQueue(q => q.WithName(_queueName)));
-
+            _serviceBus.SubscribeToCommand<TCommand>(_queueName);
             return this;
         }
 
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.SubscribeToEvent<TEvent>()
         {
-            _busClient.SubscribeAsync<TEvent>(async (@event, context) => 
-            {
-                var commandHandler = _customDependencyResolver.Resolve<IEventHandler<TEvent>>();
-                await commandHandler.HandleAsync(@event);
-            }, cfg => cfg.WithQueue(q => q.WithName(_queueName)));
-
+            _serviceBus.SubscribeToEvent<TEvent>(_queueName);
             return this;
         }
 
