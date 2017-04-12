@@ -45,6 +45,11 @@ namespace gifty.Shared.Builders
             return this;
         }
 
+        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithoutAutofac()
+        {
+            return this;
+        }
+
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName, string username, string password, int port)
         {
             _containerBuilder.RegisterRawRabbitWithAutofac(queueName, username, password, port);
