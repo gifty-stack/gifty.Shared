@@ -9,6 +9,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.IISIntegration" Version="1.1.1" />
     <PackageReference Include="Autofac" Version="4.2.1" />
+    <PackageReference Include="Nancy" Version="2.0.0-clinteastwood" />
+    <PackageReference Include="Nancy.Bootstrappers.Autofac" Version="2.0.0-clinteastwood"/>
     <PackageReference Include="RawRabbit" Version="1.10.3" />
     <PackageReference Include="RawRabbit.vNext" Version="1.10.3" />
     <PackageReference Include="RawRabbit.DependencyInjection.Autofac" Version="1.10.3" />

@@ -4,14 +4,14 @@ namespace gifty.Shared.IoC
 {
     public class CustomDependencyResolver : ICustomDependencyResolver
     {
-        private readonly IContainer _container;
+        private readonly ILifetimeScope _lifetimeScope;
 
-        public CustomDependencyResolver(IContainer container)
+        public CustomDependencyResolver(ILifetimeScope lifetimeScope)
         {
-            _container = container;
+            _lifetimeScope = lifetimeScope;
         }
 
         public TResolved Resolve<TResolved>()
-            => _container.Resolve<TResolved>();
+            => _lifetimeScope.Resolve<TResolved>();
     }
 }

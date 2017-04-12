@@ -1,10 +1,8 @@
-using System;
 using System.IO;
 using Autofac;
-using gifty.Shared.IoC;
 using Microsoft.AspNetCore.Hosting;
-using gifty.Shared.Extensions;
 using gifty.Shared.ServiceBus;
+using gifty.Shared.Extensions;
 
 namespace gifty.Shared.Builders
 {
@@ -13,8 +11,7 @@ namespace gifty.Shared.Builders
         private IWebHostBuilder _webHostBuilder;
 
         private IWebHost _webHost;
-        private ContainerBuilder _containerBuilder;
-        private ICustomDependencyResolver _customDependencyResolver;
+        private ILifetimeScope _lifetimeScope;
         private IServiceBus _serviceBus;
         private string _queueName;
 
@@ -35,33 +32,23 @@ namespace gifty.Shared.Builders
 
         IAutofacServiceBuilder IServiceBuilder.WithPort(int port)
         {
-            _webHostBuilder.UseUrls($"http://*:{port}");
+            _webHost = _webHostBuilder
+                .UseUrls($"http://*:{port}")
+                .Build();
+
             return this;
         }
 
-        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithAutofac(Func<ContainerBuilder,ContainerBuilder> registrations)
+        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithAutofac(ILifetimeScope lifetimeScope)
         {
-            _containerBuilder = registrations(new ContainerBuilder());
-            return this;
-        }
-
-        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithoutAutofac()
-        {
+            _lifetimeScope = lifetimeScope;
             return this;
         }
 
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName, string username, string password, int port)
-        {
-            _containerBuilder.RegisterRawRabbitWithAutofac(queueName, username, password, port);
-            _containerBuilder.RegisterType<gifty.Shared.ServiceBus.ServiceBus>().As<IServiceBus>();
-            var container = _containerBuilder.Build();
-
-            var customDependencyBuilder = new ContainerBuilder();
-
-            customDependencyBuilder.RegisterInstance<ICustomDependencyResolver>(new CustomDependencyResolver(container));
-            customDependencyBuilder.Update(container);
-
-            _serviceBus = container.Resolve<IServiceBus>();
+        {   
+            _lifetimeScope.RegisterRawRabbit(queueName, username, password, port);
+            _serviceBus = _lifetimeScope.Resolve<IServiceBus>();
             _queueName = queueName;
 
             return this;
@@ -81,7 +68,6 @@ namespace gifty.Shared.Builders
 
         IServiceBuilder IRabbitMqServiceBuilder.Build()
         {
-            _webHost = _webHostBuilder.Build();
             return this;
         }
 
