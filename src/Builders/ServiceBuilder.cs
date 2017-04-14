@@ -46,7 +46,7 @@ namespace gifty.Shared.Builders
         }
 
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName, string username, string password, int port)
-        {   
+        {
             _lifetimeScope.RegisterRawRabbit(queueName, username, password, port);
             _serviceBus = _lifetimeScope.Resolve<IServiceBus>();
             _queueName = queueName;
