@@ -3,7 +3,7 @@ using gifty.Shared.ServiceBus;
 
 namespace gifty.Shared.IoC
 {
-    public class ServiceModule : Module
+    internal class ServiceModule : Module
     {
         protected override void Load(ContainerBuilder containerBuilder)
         {
