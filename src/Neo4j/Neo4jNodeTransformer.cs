@@ -26,11 +26,18 @@ namespace gifty.Shared.Neo4j
             {
                 var propertyName = propertyInfo.Name.ToPascalCase();
                 var propertyValue = propertyInfo.GetValue(node, null);
+                var propertyType = propertyInfo.PropertyType;
+                var propertyTypeDefaultValue = GetDefaultValue(propertyType);
 
-                stringBuilder.Append($"{propertyName}: '{propertyValue}'");
+                Console.WriteLine($"{propertyValue} | {GetDefaultValue(propertyType)}");
 
-                if(!propertyInfo.Equals(lastNodePropertyInfo))
-                    stringBuilder.Append(", ");
+                if(!propertyValue.Equals(propertyTypeDefaultValue))
+                {
+                    stringBuilder.Append($"{propertyName}: '{propertyValue}'");
+
+                    if(!propertyInfo.Equals(lastNodePropertyInfo))
+                        stringBuilder.Append(", ");
+                }              
             }
 
             stringBuilder.Append(")");
@@ -50,6 +57,18 @@ namespace gifty.Shared.Neo4j
             return (value == null) ? stringBuilder 
                  : (additional == null) ? stringBuilder.Append(value) 
                  :  stringBuilder.Append(value + additional);
+        }
+
+        private static object GetDefaultValue(Type type)
+        {
+            try //since there's no IsValueType flag in .NET Core...
+            {
+                return Activator.CreateInstance(type);
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
