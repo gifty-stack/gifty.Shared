@@ -2,10 +2,7 @@ namespace gifty.Shared.Builders
 {
     public interface ICypherQueryBuilder
     {
-         ICypherQueryBuilder Match(string pattern, object node);
-         ICypherQueryBuilder Match(string pattern, object node, string variable);
-         ICypherQueryBuilder Match(string pattern, object[] nodes);
-         ICypherQueryBuilder Match(string pattern, object[] nodes, string[] variables);
+         ICypherQueryBuilder Match(string pattern, object[] nodes, string[] variables = null, bool isDefaultValueFilter = false);
          ICypherQueryBuilder Where(string condition);
          ICypherQueryBuilder With(string accessors);
          ICypherQueryBuilder Skip(uint skipNumber);

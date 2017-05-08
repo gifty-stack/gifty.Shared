@@ -7,7 +7,7 @@ namespace gifty.Shared.Neo4j
 {
     public static class Neo4jNodeTransformer
     {
-        public static string Transform(object node, string variable = null)
+        public static string Transform(object node, bool isDefaultValueFilter, string variable = null )
         {
             var nodeType = node.GetType();
             var nodeLabel = nodeType.Name;
@@ -31,7 +31,7 @@ namespace gifty.Shared.Neo4j
 
                 Console.WriteLine($"{propertyValue} | {GetDefaultValue(propertyType)}");
 
-                if(!propertyValue.Equals(propertyTypeDefaultValue))
+                if(!propertyValue.Equals(propertyTypeDefaultValue) || isDefaultValueFilter)
                 {
                     stringBuilder.Append($"{propertyName}: '{propertyValue}'");
 

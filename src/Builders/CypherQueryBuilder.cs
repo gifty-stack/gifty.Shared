@@ -18,34 +18,21 @@ namespace gifty.Shared.Builders
         public static ICypherQueryBuilder Create()       
             => new CypherQueryBuilder(new StringBuilder());
 
-        ICypherQueryBuilder ICypherQueryBuilder.Match(string pattern, object node)
+        public ICypherQueryBuilder Match(string pattern, object[] nodes, string[] variables = null, bool isDefaultValueFilter = false)
         {
-            var cypherNode = Neo4jNodeTransformer.Transform(node);
-            return Match(pattern, cypherNode);
-        }
-
-        ICypherQueryBuilder ICypherQueryBuilder.Match(string pattern, object node, string variable)
-        {
-            var cypherNode = Neo4jNodeTransformer.Transform(node, variable);
-            return Match(pattern, cypherNode);
-        }
-
-        ICypherQueryBuilder ICypherQueryBuilder.Match(string pattern, object[] nodes)
-        {
-            var cypherNodes = nodes.Select(n => Neo4jNodeTransformer.Transform(n)).ToArray();
-            return Match(pattern, cypherNodes);
-        }
-
-        ICypherQueryBuilder ICypherQueryBuilder.Match(string pattern, object[] nodes, string[] variables)
-        {
-            if(nodes.Length != variables.Length)
+            if(variables != null && nodes.Length != variables.Length)
                 throw new GiftyException(ErrorType.IncorrectData, "Invalid number of params or nodes in Cypher's query");
 
-            var cypherNodes = nodes.Select((n, index) => Neo4jNodeTransformer.Transform(n, variables[index])).ToArray();
+            var cypherNodes = nodes.Select((n, index) => 
+                { 
+                    return (variables!= null) ? Neo4jNodeTransformer.Transform(n, isDefaultValueFilter, variables[index])
+                                              : Neo4jNodeTransformer.Transform(n, isDefaultValueFilter, null);
+                }).ToArray();
+
             return Match(pattern, cypherNodes);
         }
 
-        ICypherQueryBuilder Match(string pattern, dynamic cypherNodes)
+        public ICypherQueryBuilder Match(string pattern, dynamic cypherNodes)
         {
             var cypherPattern = String.Format(pattern, cypherNodes);
 
@@ -53,43 +40,43 @@ namespace gifty.Shared.Builders
             return this;
         }
 
-        ICypherQueryBuilder ICypherQueryBuilder.Where(string condition)
+        public ICypherQueryBuilder Where(string condition)
         {
             _query.AppendLine($"WHERE {condition}");
             return this;
         }
 
-        ICypherQueryBuilder ICypherQueryBuilder.With(string accessors)
+        public ICypherQueryBuilder With(string accessors)
         {
             _query.AppendLine($"WITH {accessors}");
             return this;
         }
 
-        ICypherQueryBuilder ICypherQueryBuilder.OrderBy(string pattern)
+        public ICypherQueryBuilder OrderBy(string pattern)
         {
             _query.AppendLine($"ORDER BY {pattern}");
             return this;
         }
 
-        ICypherQueryBuilder ICypherQueryBuilder.Skip(uint skipNumber)
+        public ICypherQueryBuilder Skip(uint skipNumber)
         {
             _query.AppendLine($"SKIP {skipNumber}");
             return this;
         }
 
-        ICypherQueryBuilder ICypherQueryBuilder.Take(uint takeNumber)
+        public ICypherQueryBuilder Take(uint takeNumber)
         {
             _query.AppendLine($"TAKE {takeNumber}");
             return this;
         }
 
-        ICypherQueryBuilder ICypherQueryBuilder.Query(string query)
+        public ICypherQueryBuilder Query(string query)
         {
             _query.AppendLine(query);
             return this;
         }
 
-        string ICypherQueryBuilder.Return(string result)
+        public string Return(string result)
         {
             _query.AppendLine($"RETURN {result}");
             return _query.ToString();
