@@ -2,7 +2,8 @@ namespace gifty.Shared.Exceptions
 {
     public enum ErrorType : byte
     {
-        InvalidCommand = 1,
-        Unknown = 2
+        Unknown = 0,
+        InvalidCommand = 1,        
+        IncorrectData = 2
     }
 }
