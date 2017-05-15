@@ -16,6 +16,7 @@
     <PackageReference Include="RawRabbit" Version="1.10.3" />
     <PackageReference Include="RawRabbit.vNext" Version="1.10.3" />
     <PackageReference Include="RawRabbit.DependencyInjection.Autofac" Version="1.10.3" />
+    <PackageReference Include="Neo4j.Driver" Version="1.2.2" />
   </ItemGroup>
 
 </Project>

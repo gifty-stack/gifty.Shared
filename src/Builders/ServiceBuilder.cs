@@ -3,10 +3,11 @@ using Autofac;
 using Microsoft.AspNetCore.Hosting;
 using gifty.Shared.ServiceBus;
 using gifty.Shared.Extensions;
+using System;
 
 namespace gifty.Shared.Builders
 {
-    public sealed class ServiceBuilder : IServiceBuilder, IAutofacServiceBuilder, IRabbitMqServiceBuilder
+    public sealed class ServiceBuilder : IServiceBuilder, IAutofacServiceBuilder, INeo4jServiceBuilder, IRabbitMqServiceBuilder
     {
         private IWebHostBuilder _webHostBuilder;
 
@@ -39,11 +40,20 @@ namespace gifty.Shared.Builders
             return this;
         }
 
-        IRabbitMqServiceBuilder IAutofacServiceBuilder.WithAutofac(ILifetimeScope lifetimeScope)
+        INeo4jServiceBuilder IAutofacServiceBuilder.WithAutofac(ILifetimeScope lifetimeScope)
         {
             _lifetimeScope = lifetimeScope;
             return this;
         }
+
+        IRabbitMqServiceBuilder INeo4jServiceBuilder.WithNeo4j(string boltEndpoint, string login, string password)
+        {
+            _lifetimeScope.RegisterNeo4j(boltEndpoint, login, password);
+            return this;
+        }
+
+        IRabbitMqServiceBuilder INeo4jServiceBuilder.WithNoNeo4j()
+            => this;
 
         IRabbitMqServiceBuilder IRabbitMqServiceBuilder.WithRabbitMq(string queueName, string username, string password, int port)
         {
@@ -74,6 +84,6 @@ namespace gifty.Shared.Builders
         void IServiceBuilder.Run()
         {
             _webHost.Run();
-        }
+        }        
     }
 }
