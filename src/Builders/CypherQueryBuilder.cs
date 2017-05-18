@@ -15,7 +15,7 @@ namespace gifty.Shared.Builders
             _query = query;
         }
 
-        public static ICypherQueryBuilder Create()       
+        public static ICypherQueryBuilder Init()       
             => new CypherQueryBuilder(new StringBuilder());
 
         public ICypherQueryBuilder Match(string pattern, object[] nodes, string[] variables = null, bool isDefaultValueFilter = false)
@@ -32,13 +32,22 @@ namespace gifty.Shared.Builders
             return Match(pattern, cypherNodes);
         }
 
-        public ICypherQueryBuilder Match(string pattern, dynamic cypherNodes)
+        private ICypherQueryBuilder Match(string pattern, dynamic cypherNodes)
         {
             var cypherPattern = String.Format(pattern, cypherNodes);
 
             _query.AppendLine($"MATCH {cypherPattern}");
             return this;
         }
+
+        public ICypherQueryBuilder Create(string pattern, object node, string variable)
+        {
+            var cypherNode = Neo4jNodeTransformer.Transform(node, false, variable);
+            var cypherPattern = String.Format(pattern, cypherNode);
+
+            _query.AppendLine($"CREATE {cypherPattern}");
+            return this;
+        }        
 
         public ICypherQueryBuilder Where(string condition)
         {
@@ -80,6 +89,12 @@ namespace gifty.Shared.Builders
         {
             _query.AppendLine($"RETURN {result}");
             return _query.ToString();
-        }        
+        }     
+
+        public string Delete(string variable)
+        {
+            _query.AppendLine($"DELETE {variable}");
+            return _query.ToString();
+        }
     }
 }

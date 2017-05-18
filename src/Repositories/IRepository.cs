@@ -7,6 +7,6 @@ namespace gifty.Shared.Repositories
     {
          void Create(TDomainObject @object);
          void Update(TDomainObject @object);
-         void Delete(Guid id);                 
+         void Delete(TDomainObject @object);                 
     }
 }
